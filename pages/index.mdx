@@ -1,0 +1,43 @@
+import {
+  ScreenContainer,
+  Button,
+  HeroSection,
+  Hero,
+  HeroBody,
+  HeroTitle,
+  HeroTeaser,
+  HeroActionList,
+  HeroAction,
+} from "smooth-doc/components";
+import heroBackgroundImageURL from "../images/hero-background.webp";
+
+<HeroSection>
+  <Hero backgroundImageURL={heroBackgroundImageURL}>
+    <HeroBody>
+      <HeroTitle>Providing Guides and ready to use codes in Rust Language!</HeroTitle>
+      <HeroTeaser>for development as well as competitive programming.</HeroTeaser>
+      <HeroActionList>
+        <HeroAction>
+          <Button
+            variant="neutral"
+            forwardedAs="a"
+            href="/introduction/what-is-rust/"
+          >
+            Browse Guides
+          </Button>
+        </HeroAction>
+      </HeroActionList>
+    </HeroBody>
+  </Hero>
+</HeroSection>
+
+
+import { GatsbySeo } from 'gatsby-plugin-next-seo';
+
+<GatsbySeo
+    description='Providing Guides and ready to use codes in Rust Language for development as well as competitive programming.'
+    openGraph={{
+        description: 'Providing Guides and ready to use codes in Rust Language for development as well as competitive programming.',
+    }}
+/>
+
