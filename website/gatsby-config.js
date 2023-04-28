@@ -10,10 +10,29 @@ module.exports = {
         siteUrl: "https://rustp.org",
         baseDirectory: path.resolve(__dirname, '../'),
         author: "Naman Garg",
-        sections: ['Introduction', '1. Basic Programs', '2. Number Theory', '2.1 Arithmetic Operations', '2.2 Factors of a Number', '2.3 Factorials', 'Reference'],
+        sections: ['1. Basic Programs', '2. Number Theory', '2.1 Arithmetic Operations', '2.2 Factors of a Number', '3 Combinatorics'],
         twitterAccount: 'namanlp',
         githubRepositoryURL: 'https://github.com/namanlp/rustp/',
         docSearch: { appId: '9AFUK2OAFI', apiKey: '5e83557335cd2d4c93144517d309a790', indexName: 'rustp'   },
+      },
+    },
+    {
+      resolve: `gatsby-plugin-google-gtag`,
+      options: {
+        trackingIds: [
+          "G-D0G3P087MQ", // Google Analytics
+        ],
+        gtagConfig: {
+          anonymize_ip: true,
+          // cookie_expires: 0,
+        },
+        pluginConfig: {
+          head: true,
+          respectDNT: true,
+          // exclude: ["/preview/**", "/do-not-track/me/too/"],
+          // Delays processing pageview events on route update (in milliseconds)
+          delayOnRouteUpdate: 0,
+        },
       },
     },
   ],

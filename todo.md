@@ -4,6 +4,7 @@
 
 * Add copy to clipboard button
 * warn gatsby-plugin-react-helmet: Gatsby now has built-in support for modifying the document head. Learn more at https://gatsby.dev/gatsby-head
+* Expandable sidebar
 
 ## Basic Programs
 
@@ -13,8 +14,13 @@
 
 ## Number Theory
 
-* Sieve method
-* Permutation And Combination
+* Redesign intro to Number Theory page
+* nth root page
+
+## Combinatorics
+
+* Rewrite Factorial page from scratch
+* Write Permutation and Combination pages
 
 ## Arrays
 
@@ -22,4 +28,8 @@
 * Count Sort
 * Prefix Array
 * Suffix Array
+
+## Data Structures in Rust
+
+* Using in built data structures in Rust.
 

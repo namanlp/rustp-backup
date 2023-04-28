@@ -136,6 +136,7 @@ export const theme = {
     'primary-a500': (p) => transparentize(0.5, th.color('primary-500')(p)),
 
     background: th.color('white'),
+    'background-header': th.color('rgba(255, 255, 255, 0.8)'),
     'background-light': th.color('gray-100'),
     'background-primary': th.color('primary-100'),
     'background-mark': th.color('yellow-200'),
@@ -160,8 +161,8 @@ export const theme = {
     'editor-border': th.color('layout-border'),
 
     'blockquote-link': th.color('yellow-800'),
-    'blockquote-background': th.color('yellow-200'),
-    'blockquote-border': th.color('yellow'),
+    'blockquote-background': th.color('rgba(230, 230, 220, 0.9)'),
+    'blockquote-border': th.color('rgba(183,65,14, 1)'),
 
     'doc-search-suggestion-highlight-background': th.color('primary-200'),
     'doc-search-suggestion-highlight-on-background': th.color('primary-800'),
@@ -171,6 +172,7 @@ export const theme = {
     modes: {
       dark: {
         background: th.color('gray-900'),
+        'background-header': th.color('rgba(26, 32, 44, 0.8)'),
         'editor-background': th.color('black'),
         'background-light': th.color('gray-800'),
         'background-primary': th.color('primary-900'),

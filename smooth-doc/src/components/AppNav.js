@@ -1,12 +1,9 @@
 import { RiGithubFill } from 'react-icons/ri'
-
+import {FaBook} from "react-icons/fa";
 
 import React from 'react'
 import { Nav, NavList, NavListItem, NavLink } from './Nav'
 import { ColorModeSwitcher } from './ColorModeSwitcher'
-
-import book from "./book-solid.svg"
-import "./AppNavStyle.css"
 
 export function AppNav() {
     return (
@@ -20,7 +17,7 @@ export function AppNav() {
                         aria-label="Browse Guides"
                         className = "nav_link"
                     >
-                        <img alt="Browse Guides" src={book} height="24" className="navBook" />
+                        <FaBook style={{ width: 24, height: 24 }} />
                     </NavLink>
                 </NavListItem>
 
