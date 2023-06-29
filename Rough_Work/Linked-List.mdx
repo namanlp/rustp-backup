@@ -1,0 +1,52 @@
+---
+title: Linked List
+section: 4 Data Structures
+order: 10
+slug: /data-structures/linked-list
+description: Linked List in Rust
+---
+
+# Linked List
+and built in methods for Linked List in standard crate in Rust
+
+## Introduction
+
+Linked List is an efficient way of storing the data, especially for implementing the Abstract Data Types (ADT) like Stack and Queue.
+
+**Definition :** Linked List is a linear chain like data structure, in which each node contains the address or the pointer of the next node.
+
+Linked List is **non-contiguous**, that is, in the linked lists, data is not stored in sequential memory addresses, unlike Arrays or Vectors.
+
+Linked List can be classified in two ways
+
+### Previous Pointer
+
+In this, we can classify Linked List in two ways
+
+1. **Singly Linked List :** In this, each node contains the address of the next node only. Hence, it is not possible to get the address or pointer of the next node easily, and hence, only **forward traversal** is possible.
+2. **Doubly Linked List :** In this, each node contains the address of the previous as well as the next node. Hence, both **forward and backward traversal** is possible.
+
+### Ending
+
+1. **Null Terminated :** In this, the last element of the linked list is pointing to *NULL* or it is a NULL Pointer. As we know that in Rust, Null pointer is not allowed for memory safety. Hence Option:None is used instead.
+2. **Circular Linked List :** In this, the last element of the list is pointing  towards the first element, forming a Circular Linked List. Hence, traversing this list may make an *infinite loop* if not handled carefully.
+
+The Linked Lists have a special property:
+Insertion as well as deletion can be done in constant time complexity, from anywhere from the array.
+This is because of the facts that all you have to do is update the next pointer.
+
+Hence,
+Linked List is the best Data Structure
+to implement Queue as ADT.
+
+
+Linked list has one more special property : it can grow without any copying like we did in vectors. So, we can easily use Linked List when we need growable storage.
+
+Hence, Linked List a popular choice for handling collisions in Hash Tables as well as storing adjacent nodes in a graph.
+Because in both cases, we have to traverse the entire list anyway.
+
+
+
+## Creating A Linked List
+
+

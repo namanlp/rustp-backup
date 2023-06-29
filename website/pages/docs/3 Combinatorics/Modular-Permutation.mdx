@@ -1,0 +1,227 @@
+---
+title: Modular Permutation
+section: 3 Combinatorics
+order: 11
+slug: /combinatorics/modular-permutation/
+description: In many problems, we may require to find number of possible permutations modulo with respect to a given number.So we will see how to find modular Permutation using Modular factorial Array and Modular Multiplicative inverse in Rust
+---
+
+# Modular Permutation
+and program to find the Modular Permutation using Modular factorial Array and Modular Multiplicative inverse in Rust
+
+## Introduction
+
+In many problems, it becomes unfeasible to calculate Permutation using traditional data types like `i64` or even `i128` due to `overflow`. The largest integer data type in rust, `u128` can hold the number upto order of 10<sup>38</sup>.
+But Permutations grows pretty fast with n and r. For example, **<sup>100</sup>P<sub>100</sub>** is approximately is 9.33 × 10<sup>157</sup>
+
+So, it becomes unfeasible from competitive programming point of view to compute exact values using C / C++ / Rust etc.
+So, in most programming contest, we have to find the answer modulo with respect to given number, generally **<code>10<sup>9</sup> + 7 or 1000000007</code>** is used because It is *safe prime number*.
+
+Hence, we will discuss how to find **Modular Permutation** or permutation of a large number with respect to a given number using [Modular factorial Array](/combinatorics/modular-factorial-array/) and [Modular Multiplicative inverse](/number-theory/modular-inverse/) in Rust.
+
+## Single Permutation
+
+When we have to find the value of 1 <sup>n</sup>P<sub>r</sub>, we can just find the modular permutation by using modular multiplication and multiplying numbers from `n-r+1` to `n`, inclusive.
+
+**Note:** This would take linear time complexity for each permutation. So, this is efficient when there are fewer of queries ( When there are less than log(n) queries to be precise.)
+
+Here is code for above implementation.
+
+```rust
+fn modular_permutation(n: i128, r: i128, p:i128) -> i128{
+    // Take Answer to be 1
+    let mut ans = 1;
+
+    // nPr = n! / (n-r)! = (n-r+1) × (n-r+2) × .... × n
+    for i in (n-r+1)..(n+1) {
+        ans *= i;
+
+        // Division and Modulo are expensive for cpu
+        // So, we find modulo if answer is greater than or equal to p
+        // It can never become p though, else, answer will become 0
+        if ans>=p {
+            ans = ans%p;
+        }
+    }
+
+    return ans;
+}
+```
+
+With Driver Code
+
+```rust
+
+fn modular_permutation(n: i128, r: i128, p:i128) -> i128{
+    // Take Answer to be 1
+    let mut ans = 1;
+
+    // nPr = n! / (n-r)! = (n-r+1) × (n-r+2) × .... × n
+    for i in (n-r+1)..(n+1) {
+        ans *= i;
+
+        // Division and Modulo are expensive for cpu
+        // So, we find modulo if answer is greater than or equal to p
+        // It can never become p though, else, answer will become 0
+        if ans>=p {
+            ans = ans%p;
+        }
+    }
+
+    return ans;
+}
+
+// Driver code
+
+use std::io::stdin;
+fn take_int() -> i128 {
+    let mut input = String::new();
+    stdin().read_line(&mut input).unwrap();
+    return input.trim().parse().unwrap();
+}
+
+pub fn main() {
+    // Take values of n, r and p
+    let n = take_int();
+    let r = take_int();
+    let p = take_int();
+    println!("{}", modular_permutation(n, r, p));
+}
+
+```
+**Input**
+>100 <br/>
+50 <br/>
+1000000007
+
+
+**Output**
+>505671657
+
+**Time Complexity : O( n )** <br/>
+**Space Complexity : O( 1 )**
+
+## Efficient Approach
+
+When we have to find large number of modular permutations, say 10<sup>5</sup> or 10<sup>6</sup> permutations and n can also range up to 10<sup>5</sup> or 10<sup>6</sup>, we can clearly see that above approach will result into
+TLE (Time Limit Exceeded) in Competitive Programming contests.
+
+So, we have to find Modular Permutation in least time for each test case.
+
+The idea is to first generate a [Modular Factorial Array](/combinatorics/modular-factorial-array/) and then find the number of permutations using equation
+
+<sup>n</sup>P<sub>r</sub> = n! / (n-r)!
+
+Using Modular Arithmetic, this equation becomes
+
+<center><b>(<sup>n</sup> P <sub>r</sub>) mod p = ((n!)  mod p * (n-r)! <sup>-1</sup> mod p) mod p </b> </center>
+
+To find the number of permutations.
+
+The implementation using this approach is.
+
+```rust
+fn modular_permutation(n: usize, r: usize, p:usize, factorial_array:&Vec<usize>) -> usize{
+    return (factorial_array[n] * mod_inverse(factorial_array[n - r], p)) % p;
+}
+```
+
+With driver code
+
+```rust
+
+
+fn modular_permutation(n: usize, r: usize, p:usize, factorial_array:&Vec<usize>) -> usize{
+    return (factorial_array[n] * mod_inverse(factorial_array[n - r], p)) % p;
+}
+
+// Driver code
+
+use std::io::stdin;
+fn take_int() -> usize {
+    let mut input = String::new();
+    stdin().read_line(&mut input).unwrap();
+    return input.trim().parse().unwrap();
+}
+
+
+fn generate_factorial_array(max_number : usize, divisor : usize) -> Vec<usize>{
+    let mut factorial_array : Vec<usize> = vec![1; max_number+1];
+    for i in 2..(max_number + 1) {
+        factorial_array[i] = (factorial_array[i-1] * i) % divisor; }
+    return factorial_array;
+}
+
+fn modular_exponent(mut n:usize ,mut x:usize , p:usize) -> usize{
+    let mut ans = 1;
+    if x<=0 { return 1; }
+    loop { if x==1 { return (ans * n) % p; }
+        if x&1==0 { n=( n * n ) % p; x>>=1;continue; }
+        else { ans = (ans*n) % p; x-=1; }
+    }
+}
+
+fn mod_inverse (n:usize, p:usize) -> usize{
+    return modular_exponent(n, p-2, p);
+}
+
+pub fn main() {
+    // Take values of n, r and p
+    let n = take_int();
+    let r = take_int();
+    let p = take_int();
+    // Contains factorial of all numbers from 1 to 10^6, modulo 10^9 + 7
+    let factorial_array = generate_factorial_array(1_000_000, 1_000_000_007);
+    println!("{}", modular_permutation(n, r, p, &factorial_array));
+}
+```
+
+**Input**
+>100 <br/>
+50 <br/>
+1000000007
+
+
+**Output**
+>505671657
+
+**Time Complexity : O( nlog(n) )** <br/>
+**Space Complexity : O( n )**
+
+<br />
+
+**Note:** Although the time complexity is higher in this approach, it will be very less for higher number of queries. For example, if we have n queries of  <sup>n</sup>P<sub>r</sub>, the time taken by this approach will still be O( nlog(n) ),
+whereas earlier approach will take O( n<sup>2</sup> ) time. So, this is efficient only when there are **higher number of queries**.
+
+## Summary
+
+Finding number of possible Permutations is one of the standard problems in Combinatorics. But as we know, it grows pretty fast, and it becomes necessary to compute modulo of number of Permutations in many problems.
+
+So, in this article, we saw how to find modular Permutation using Modular factorial Array and Modular Multiplicative inverse in Rust.
+
+Here is code for easy access
+
+```rust
+fn modular_exponent(mut n:usize ,mut x:usize , p:usize) -> usize{
+    let mut ans = 1;
+    if x<=0 { return 1; }
+    loop { if x==1 { return (ans * n) % p; }
+        if x&1==0 { n=( n * n ) % p; x>>=1;continue; }
+        else { ans = (ans*n) % p; x-=1; }
+    }
+}
+
+fn mod_inverse (n:usize, p:usize) -> usize{
+    return modular_exponent(n, p-2, p);
+}
+
+// Here is the function
+fn modular_permutation(n: usize, r: usize, p:usize, factorial_array:&Vec<usize>) -> usize{
+    return (factorial_array[n] * mod_inverse(factorial_array[n - r], p)) % p;
+}
+```
+
+import {SEO} from "smooth-doc/src/components/SEO";
+
+<SEO title="Modular Permutation - Rust Programming"
+    description="In many problems, we may require to find number of possible permutations modulo with respect to a given number.So we will see how to find modular Permutation using Modular factorial Array and Modular Multiplicative inverse in Rust."  />

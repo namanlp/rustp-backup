@@ -1,0 +1,163 @@
+---
+title: Vector Searching
+section: 4 Data Structures
+order: 4
+slug: /data-structures/vector-searching
+description: Searching is an important operation in a Vector. In this article, we will discuss Linear Search as well as Binary Search and see their programs and also how to use built-in function to perform Search in Rust.
+---
+
+# Searching in a vector
+and program for linear and binary search in a vector Rust
+
+## Introduction
+
+Searching is finding the index of an element in a collection of elements. Here, in this article, we will discuss how to search for a given element in a vector.
+
+We can search for an element in a vector ar an array in 2 possible ways
+
+1. **Linear Search :** In this, we traverse through whole vector till the element is found. Hence, it takes **O( n )** time complexity.
+2. **Binary Search :** In this, we only check mid-points instead of checking the whole vector. Hence, it takes only **O( log(n) )** time complexity. Vector must be sorted for Binary Search.
+
+## Linear Search
+
+In the Linear Search, we traverse the whole vector, and check if the given element is equal to key. If the element is found, its index is returned.
+
+As it traverses the whole array, it takes **O( n )** time complexity. 
+
+Also, **order of array does not matter** for linear search. It is very simple to implement. Here is a simple function demonstrating Linear Search
+
+```rust
+fn search(vecky:&Vec<usize>, key:usize) -> usize{
+    for i in 0..vecky.len() {
+        if vecky[i] == key {
+            return i;
+        }
+    }
+
+    // If element is not found
+    return vecky.len();
+}
+```
+
+Program With driver code
+
+```rust
+fn search(vecky:&Vec<usize>, key:usize) -> usize{
+    for i in 0..vecky.len() {
+        if vecky[i] == key {
+            return i;
+        }
+    }
+
+    // If element is not found
+    return vecky.len();
+}
+
+// Driver code
+
+fn main() {
+    let vecky = vec![0, 1, 2, 3, 4, 5];
+    println!("{}", search(&vecky, 4) );
+    println!("{}", search(&vecky, 100) );
+}
+```
+
+
+**Output**
+
+> 4 <br />
+6
+
+**Time Complexity : O( n )** <br/>
+**Space Complexity : O( 1 )**
+
+
+The standard crate in Rust only has `binary_search()` and `contains()` function. So, you will have to make your own search function for Linear Search, as above
+
+
+## Binary Search
+
+In the Binary Search, we only check the midpoints of a **sorted list**. Each time, we have to search only in half of the list. Hence, its complexity is **O( log(n) )**.
+
+Also, the vector **must be sorted** for Binary search.
+
+Here is the Algorithm
+1. Calculate the mid-point of the **sorted** vector.
+2. If the element is equal to the mid-point, return the index of the mid-point.
+3. If the Element is greater than the mid-point, search for the element in the slice containing the larger values.
+4. If the element is less than the mid-point, search the elements in slice containing smaller values than the mid-point.
+5. Go back to step 2, till we have no elements left in the slice.
+
+**Note :** If we observe carefully, each time if the element is not found, we have to find for the element in only the half of the vector. So, it takes only **O ( log(n) )** for finding any element.
+
+Here is the function for Binary Search in Rust
+
+```rust
+fn binary_search(vecky:&Vec<usize>, key:usize) -> usize{
+    let mut low = 0;
+    let mut high = vecky.len()-1;
+
+    while low <= high {
+        let mid = low + (high - low) / 2;
+
+        // If key is middle element, return it
+        if vecky[mid] == key {
+            return mid;
+        }
+
+        // If key is greater than middle element, we ignore left half
+        if vecky[mid] < key {
+            low = mid + 1;
+        }
+
+        // If key is less than middle element, we ignore right half
+        else{
+            high = mid - 1;
+        }
+    }
+    // If the element is not found
+    return vecky.len();
+}
+```
+
+Use the same driver code.
+
+**Output**
+
+> 4 <br />
+6
+
+**Time Complexity : O( log(n) )** <br/>
+**Space Complexity : O( 1 )**
+
+## binary_search() function
+
+Rust already has **`binary_search()`** function built into it. It is already there in `std::vec::Vec` and hence, included in prelude. So, you don't even have to import it explicitly.
+
+For example,
+
+```rust
+fn main() {
+    let vecky = vec![0, 1, 2, 3, 4, 5];
+    println!("{}", vecky.binary_search(&4).expect("Not found") );
+    println!("{}", vecky.binary_search( &100).expect("Not Found") );
+}
+```
+
+**Output**
+
+> 4 <br />
+thread 'main' panicked at 'Not Found: 6'
+
+Hence, you can easily use `binary_search()` function on any vector or  a slice of vector in Rust.
+
+## Conclusion
+
+Searching is an important operation in a Vector. In this article, we discussed Linear Search as well as Binary Search and saw their programs and also how to use built-in function to perform Search in Rust.
+
+**Thank You**
+
+import {SEO} from "smooth-doc/src/components/SEO";
+
+<SEO title="Searching in a Vector - Rust Programming"
+     description="Searching is an important operation in a Vector. In this article, we will discuss Linear Search as well as Binary Search and see their programs and also how to use built-in function to perform Search in Rust" />

@@ -1,0 +1,160 @@
+---
+title: Vector Sorting
+section: 4 Data Structures
+order: 3
+slug: /data-structures/sorting-vector
+description: Sorting is putting the sequence of elements into an order. In this article, we will see how to sort a vector using both stable sort and unstable sort and also, how to sort using a compare function in Rust Language.
+---
+
+# Sorting Vector
+and a part of it in Rust
+
+## Introduction
+
+Sorting is defined as putting the sequence of elements into an *order*. The order can be ascending or descending or can be decided using a comparison function.
+
+Sorting is very useful in many applications because it can help in
+
+1. Searching for a given value efficient.
+2. Finding the median of the sequence.
+3. Merging the sequences.
+4. Determining k<sup>th</sup> largest and smallest elements
+etc.
+
+Hence, sorting is one of the most important algorithms.
+
+But here, in this article, we will not discuss the algorithm itself. We will learn how to use functions provided in Rust's standard crate to sort the vector.
+
+## sort() method
+
+The **`sort()`** method is used to sort the whole array. It is **stable sorting** algorithm, inspired by [Timsort](https://en.wikipedia.org/wiki/Timsort)
+
+For Example
+
+```rust
+fn main() {
+    let mut vecky = vec![10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
+    vecky.sort();
+    println!("{:?}", vecky);
+}
+```
+
+**Output**
+
+>[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+**Time Complexity (Average case) : O(n log(n) )** <br />
+**Space Complexity : O (n)**
+
+## sort_unstable() method
+
+The **`sort_unstable()`** method, as suggested by name, is unstable sorting method, and can provide better performance than stable sort in some cases. It uses pattern defeating quick sort algorithm to sort the elements.
+
+For Example
+
+```rust
+fn main() {
+    let mut vecky = vec![10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
+    vecky.sort_unstable();
+    println!("{:?}", vecky);
+}
+```
+
+**Output**
+
+>[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+**Time Complexity (Average case) : O(n log(n) )** <br />
+**Space Complexity : O ( log (n) )**
+
+**Note :** Although the time complexity is similar, **`sort_unstable()`** can be faster than stable sort.
+
+## Sort a slice of a Vector
+
+We can use both `sort()` and `sort_unstable()` to sort a slice of a vector. We simply have to use slice of the vector instead of vector itself. For example
+
+```rust
+vecky[0..5].sort();
+```
+or
+
+```rust
+vecky[0..5].sort_unstable();
+```
+
+**Output**
+
+>[6, 7, 8, 9, 10, 5, 4, 3, 2, 1]
+
+## sort_by() custom key
+
+To sort a vector using our custom function, we have to use **`sort_by()`** method. We can simply provide a method to use as function in this.
+
+For example, to sort a vector in descending order, we can define a compare function
+
+```rust
+fn compare(a: &i32, b: &i32) ->std::cmp::Ordering{
+    if a<b {
+        return std::cmp::Ordering::Greater;
+    }
+    if a==b{
+        return  std::cmp::Ordering::Equal;
+    }
+    return std::cmp::Ordering::Less;
+}
+```
+
+and use it
+
+```rust
+fn main() {
+    let mut vecky = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    vecky[0..5].sort_by(compare);
+    println!("{:?}", vecky);
+}
+```
+
+**Output**
+
+> [5, 4, 3, 2, 1, 6, 7, 8, 9, 10]
+
+**Note :** 1. The compare function must return value of `std::cmp::Ordering` type.
+2. We can alternatively use `sort_by(|a, b| compare(a, b))` in case you need it.
+
+## sort_unstable_by()
+
+We can use `sort_unstable_by()` in similar manner. For example
+
+```rust
+fn compare(a: &i32, b: &i32) ->std::cmp::Ordering{
+    if a<b {
+        return std::cmp::Ordering::Greater;
+    }
+    if a==b{
+        return  std::cmp::Ordering::Equal;
+    }
+    return std::cmp::Ordering::Less;
+}
+
+fn main() {
+    let mut vecky = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    vecky[0..5].sort_unstable_by(compare);
+    println!("{:?}", vecky);
+}
+```
+
+**Output**
+
+> [5, 4, 3, 2, 1, 6, 7, 8, 9, 10]
+
+## Conclusion
+
+Sorting is putting the sequence of elements into an *order*, and is a very commonly used function.
+In this article, we saw how to sort a vector using both stable sort and unstable sort and also, how to sort using a compare function in Rust Language.
+
+**Thank You**
+
+import {SEO} from "smooth-doc/src/components/SEO";
+
+<SEO title="Sorting a Vector - Rust Programming"
+     description="Sorting is putting the sequence of elements into an order. In this article, we will see how to sort a vector using both stable sort and unstable sort and also, how to sort using a compare function in Rust Language." />
