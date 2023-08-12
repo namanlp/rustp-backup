@@ -1,0 +1,173 @@
+---
+title: Range Query Segment Tree
+section: 5.1 Array Algorithms
+order: 11
+slug: /array-algorithms/range-query-segment-tree/
+description: Segment Trees are especially useful for Min/Max and Or/Xor functions, especially when Update Queries are involved. In this article, will see how to perform range queries on a given segment tree.
+---
+
+# Range Query in Segment Tree
+and program to perform Range Query in a Segment Tree in Rust
+
+## Introduction
+
+I have already discussed the use cases as well as how to [Construct the  Segment Tree in Rust Language](/array-algorithms/construct-segment-tree/).
+If you have not already read that article, please visit that before, because this is continuation of that article.
+
+Here, we will actually perform Range Query on a segment tree to find output of a given subarray of an Array.
+
+## Approach
+
+Now, if we look at our Segment Tree and Range Queries carefully, we can categorize them in one of 3 categories.
+
+1. **No Overlap :** In this, the Range of our Query and Given Node does not contain any common element. So, we return identity element in this case.
+2. **Total Overlap :** In this, all the elements of the **given node** are covered in the query. In this, we simply return the value of node.
+3. **Partial Overlap :** In this, there exists some elements that are covered in a node, but not in the query. In this, we have to search in its children nodes recursively.
+
+**For example :** If a node contains value from [2, 5] (inclusive)
+
+1. **No Overlap :** Will contain range query such as [0, 1], [6, 7] etc.
+2. **Total Overlap :** Will contain range query such [1, 7] , [2, 10] etc.
+3. **Partial Overlap :** Will contain range query such [3, 7] , [2, 3] etc.
+
+## Function
+
+```rust
+fn range_query(st:&Vec<usize>, nl:usize, nh:usize, ql:usize, qh:usize, pos : usize) -> usize{
+    //nl, nh == node low and node high respectively
+    // ql, qh == query low and query high respectively
+
+    // No Overlap, identity element in product is 1
+    if nh < ql || qh < nl {
+        return 1;
+    }
+
+    // Total overlap, return element at given node
+    if nh<= qh && nl>=ql {
+        return st[pos]
+    }
+
+    // Here, you can change operation as per requirement
+    // I am using product operator for reference
+    let mid = (h+l)/2;
+    return range_query(st, nl, mid, ql, qh, 2*pos + 1) * range_query(st, mid+1, nh, ql, qh, 2*pos + 1);
+}
+```
+
+With driver code
+
+```rust
+
+
+fn range_query(st:&Vec<usize>, nl:usize, nh:usize, ql:usize, qh:usize, pos : usize) -> usize{
+    //nl, nh == node low and node high respectively
+    // ql, qh == query low and query high respectively
+
+    // Total overlap, return element at given node
+    if ql <= nl && qh>= nh {
+        return st[pos];
+    }
+
+    // No Overlap, identity element in product is 1
+    if nh < ql || qh < nl {
+        return 1;
+    }
+
+    // Partial Overlap, we search for both left and right children nodes
+    // You have to edit below as per required function.
+    let mid = (nh+nl)/2;
+    return range_query(st, nl, mid, ql, qh, pos*2 + 1) * range_query(st, mid+1, nh, ql, qh, pos*2 + 2);
+}
+
+// Construct the Segment Tree
+
+fn cs(n:usize) ->usize{
+    if n.count_ones() == 1 { return (n<<1)-1; }
+    let k = 1<<(64 - n.leading_zeros());
+    return (k<<1)-1;
+}
+
+fn cons_st(arr:&Vec<usize>) -> Vec<usize> {
+    let n = arr.len();
+    let s = cs(n);
+
+    // This is set as 1 by default for product only
+    let mut segment_tree = vec![1 as usize; s];
+    cons_st_util(arr, &mut segment_tree, 0, n-1, 0);
+    return segment_tree;
+}
+
+fn cons_st_util(arr:&Vec<usize>, tree:&mut Vec<usize>, l:usize, h:usize, pos:usize){
+    if h<l { return; }
+    if h == l { tree[pos] = arr[l];return; }
+    let mid = (h+l)/2;
+    cons_st_util(arr, tree, l, mid, pos*2+1);
+    cons_st_util(arr, tree, mid+1, h, pos*2+2);
+
+    // Here, you can change operation as per requirement
+    // I am using product operator for reference
+    tree[pos] = tree[pos*2+1]*tree[pos*2+2];
+}
+
+fn main() {
+    let arr = vec![1,2, 3, 4, 5, 6, 7, 8, 9, 10];
+    let st = cons_st(&arr);
+
+    // We have to use arr.len() -1 as nh because inclusive range
+
+    // Prints product of first element
+    println!("{}", range_query(&st, 0, arr.len()-1, 0, 0, 0));
+
+    // Prints product of first 10 elements
+    println!("{}", range_query(&st, 0, arr.len()-1, 0, 9, 0));
+
+    // Prints product of elements 2 to 5 ( inclusive )
+    // So, the answer would be product of 3, 4, 5, 6
+    println!("{}", range_query(&st, 0, arr.len()-1, 2, 5, 0));
+
+    // Prints product of elements 1 to 7 (inclusive), arr[1] = 2 and arr[7] = 8
+    println!("{}", range_query(&st, 0, arr.len()-1, 1, 7, 0));
+}
+
+```
+
+**Output**
+>1  <br/>
+3628800 <br/>
+360 <br/>
+40320 <br/>
+
+If there are Q queries,
+
+**Time Complexity : O( n + q*log(n) )** <br/>
+**Space Complexity : O( n )**
+
+## Conclusion
+
+In this article, we saw how to perform range queries on a given segment tree in **Logarithmic Time Complexity**.
+
+Now, you should be able to construct as well as perform Range Queries in a Segment Tree in Rust Language.
+
+Here is the optimized function for easy access
+
+```rust
+
+fn range_query(st:&Vec<usize>, nl:usize, nh:usize, ql:usize, qh:usize, pos : usize) -> usize{
+    if ql <= nl && qh>= nh { return st[pos]; }
+    if nh < ql || qh < nl { return 1; }
+    let mid = (nh+nl)/2;
+
+    // You have to edit below as per required function.
+    return range_query(st, nl, mid, ql, qh, pos*2 + 1) * range_query(st, mid+1, nh, ql, qh, pos*2 + 2);
+}
+```
+
+Segment Trees are especially useful for Min/Max and Or/Xor functions, especially when Update Queries are involved.
+
+**Thank You**
+
+
+import {SEO} from "smooth-doc/src/components/SEO";
+
+<SEO title="Range Query in Segment Tree - Rust Programming"
+    description="Segment Trees are especially useful for Min/Max and Or/Xor functions, especially when Update Queries are involved. In this article, will see how to perform range queries on a given segment tree."/>

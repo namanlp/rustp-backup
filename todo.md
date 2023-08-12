@@ -25,10 +25,11 @@
 
 * Difference Array
 * Count Sort
-* Prefix Array
 * Suffix Array
 
 ## Data Structures in Rust
 
 * Using in built data structures in Rust.
+
+* DSA Sheet
 
