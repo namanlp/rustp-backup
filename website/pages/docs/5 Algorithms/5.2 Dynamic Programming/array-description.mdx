@@ -1,0 +1,532 @@
+---
+title: Array Description
+section: 5.2 Dynamic Programming
+order: 25
+slug: /dynamic-programming/array-description/
+description: Determine the number of possible arrays, absolute difference of adjacent elements is at most 1. We will see recursive, memoization, tabulation and space optimized DP solution in Rust Language.
+---
+
+# Array Description
+and space optimized Dynamic Programming Solution using tabulation and memoization in Rust Language.
+
+## Introduction
+
+Array Description is another Dynamic Programming Problem taken from CSES problem set. Here is <a href="https://cses.fi/problemset/task/1746"> Array Description Problem Link </a>
+
+In this question you are given an array with missing values and some conditions. You have to determine the number of possible arrays following those conditions.
+
+**Conditions are :**
+
+1. Absolute difference between two adjacent values is at most 1.
+2. Each element in the array must be in range 1 to m.
+
+You are given the value of n, m and the array, in which missing numbers are represented by `0`, and other numbers are between 1 and m.
+
+You have to tell the number of possible arrays that follow the above conditions. Since the answer may be very large, you have to tell the answer modulo 10<sup>9 </sup>+7
+
+**For Example :** If the array is [2, 1, 0] and the m is 100, the answer will be 2 as the arrays can be [2, 1, 1] and [2, 1, 2].
+
+## Recursive Solution
+
+In the solution to this problem, we apply an observation.
+
+**Observation :** If the value of the last element of the array is fixed, say `x`,  there can be only three values of last second element, that is `x-1`, `x` and `x+1`. Similarly, we can count the cases of last third element and so on till we reach first element.
+
+We can apply this observation to solve this problem.
+
+### Algorithm
+
+If the last element of array is `0`, count the cases for all values of last element from 1 to m. Here is the function to count possible arrays.
+
+Function takes the original array, index to check, m and value to check as input and return the number of possible cases for the array.
+
+1. If the value to check is not in range of 1 to m, return 0.
+2. If the given index of array is non 0, and not equal to the given value, return 0, because can not be possible.
+3. Now, it is certainly possible to create an array using these values.
+4. **Base Case :** If the index is 0, return 1, because we can set the first element to given value. Hence 1 case.
+5. **Recursive Case :** Else, return the cases by setting previous element to given `value-1`, `value` and `value+1`.
+
+
+### Function
+
+Here is the function using above algorithm
+
+```rust
+
+fn count_arrays(arr:&Vec<usize>, index:usize, m:usize, value:usize) -> usize{
+
+    // If value is not between 1 and m, no possible case
+    if value >m || value < 1 { return 0; }
+
+    // Now, if the array's given index value is already non 0
+    // And not equal to the checked value, no possible case
+    if arr[index] != 0 && arr[index] != value { return 0; }
+
+    // Now, in either case, we can set the given value to the given index.
+    // Hence, count the cases after setting given index to value
+
+    // Base Case, if the first element is to be checked, return 1
+    // Because if arr[0] == 0, only 1 possible case, that is set the value
+    // Or if arr[0] == value, still only 1 case
+    if index == 0 { return 1; }
+
+
+    // Now cases are counted by recursively calling the function
+    // For index -1, and values x-1, x, x+1
+    // It is guaranteed that the value returned by each function
+    // is not greater than 10^9+7. So, we add them and return their modulo 10^9+7
+
+    return (count_arrays(arr, index-1, m, value-1) +
+        count_arrays(arr, index-1, m, value) +
+        count_arrays(arr, index-1, m, value+1)) % 1_000_000_007;
+}
+```
+
+With Driver code
+
+```rust
+
+
+fn count_arrays(arr:&Vec<usize>, index:usize, m:usize, value:usize) -> usize{
+
+    // If value is not between 1 and m, no possible case
+    if value >m || value < 1 { return 0; }
+
+    // Now, if the array's given index value is already non 0
+    // And not equal to the checked value, no possible case
+    if arr[index] != 0 && arr[index] != value { return 0; }
+
+    // Now, in either case, we can set the given value to the given index.
+    // Hence, count the cases after setting given index to value
+
+    // Base Case, if the first element is to be checked, return 1
+    // Because if arr[0] == 0, only 1 possible case, that is set the value
+    // Or if arr[0] == value, still only 1 case
+    if index == 0 { return 1; }
+
+
+    // Now cases are counted by recursively calling the function
+    // For index -1, and values x-1, x, x+1
+    // It is guaranteed that the value returned by each function
+    // is not greater than 10^9+7. So, we add them and return their modulo 10^9+7
+
+    return (count_arrays(arr, index-1, m, value-1) +
+        count_arrays(arr, index-1, m, value) +
+        count_arrays(arr, index-1, m, value+1)) % 1_000_000_007;
+}
+
+// Driver code
+
+// Take array input
+use std::io;
+fn take_vector() -> Vec<usize> {
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).unwrap();
+    let arr: Vec<usize> = input.trim().split_whitespace()
+        .map(|x| x.parse().unwrap()).collect();
+    return arr;
+}
+
+fn main() {
+    // Input n and m
+    let n_m = take_vector();
+    let n = n_m[0];
+    let m = n_m[1];
+
+    // Take array
+    let arr = take_vector();
+
+    // Take sum of all the possible values.
+    // Now, we know that usize can easily store numbers upto 10^18
+    // So, we take modulo at the end.
+
+    let mut ans = 0;
+
+    // We take all possible value of last element.
+    // If last element is non zero, other values will be rejected
+    for i in 1..m+1 {
+        ans+=count_arrays(&arr, n-1, m, i);
+    }
+
+    println!("{}", ans% 1_000_000_007);
+}
+```
+
+**Input**
+> 3 100 <br/>
+2 1 0
+
+**Output**
+
+> 2
+
+**Time Complexity : O( 3<sup>n</sup> )** <br/>
+**Space Complexity : O( n )**
+
+( Space complexity includes recursive stack space )
+
+
+## Overlapping Sub-problems
+
+If we have a look carefully on recursive approach, we computed multiple results many times.
+
+**For example :**  If `m` = 100 and array is [0, 0, 0, 0, 0, 0, 0, 50, 0, 0, 0, 0, 0, 0, 0], we can reach the element 50 in thousands of ways, and takes thousands of recursions each time to calculate.
+
+These are called **Overlapping Sub-problems** because they are smaller part of large problems, and are computed again and again.
+
+So, we simply calculate them once, and store them in a matrix, and retrieve them when necessary. This helps to save a lot of computation.
+
+This is called Memoization Dynamic Programming Approach for the problem.
+
+## Memoization ( Top-down DP ) Method
+
+In memoization method, we simply take a DP matrix, and store the computed result.
+
+### Algorithm
+
+1. Initially, take a DP matrix and set all its elements to `None` type. Alternatively, you can set it to -1.
+2. If the possible arrays for given index and value is already computed, return it.
+3. Else, calculate the value using recursion, and store it in DP matrix, and return it.
+
+### Function
+
+Here is the function using above algorithm
+
+```rust
+fn count_arrays(arr:&Vec<usize>, index:usize, m:usize, value:usize, dp: &mut Vec<Vec<Option<usize>>>) -> usize{
+
+    // If value is not between 1 and m, no possible case
+    if value >m || value < 1 { return 0; }
+
+    // If already computed the value, return it
+    if dp[index][value].is_some() { return dp[index][value].unwrap(); }
+
+    // Now, if the array's given index value is already non 0
+    // And not equal to the checked value, no possible case
+    if arr[index] != 0 && arr[index] != value { dp[index][value] = Option::from(0); return 0; }
+
+    // Now, in either case, we can set the given value to the given index.
+    // Hence, count the cases after setting given index to value
+
+    // Base Case, if the first element is to be checked, return 1
+    // Because if arr[0] == 0, only 1 possible case, that is set the value
+    // Or if arr[0] == value, still only 1 case
+    if index == 0 { dp[index][value] = Option::from(1); return 1; }
+
+
+    // Now cases are counted by recursively calling the function
+    // For index -1, and values x-1, x, x+1
+    // It is guaranteed that the value returned by each function
+    // is not greater than 10^9+7. So, we add them and return their modulo 10^9+7
+
+    dp[index][value] = Option::from(  (count_arrays(arr, index-1, m, value-1, dp) +
+        count_arrays(arr, index-1, m, value, dp) +
+        count_arrays(arr, index-1, m, value+1, dp)) % 1_000_000_007);
+    return dp[index][value].unwrap();
+}
+```
+
+With Driver code
+
+```rust
+
+
+fn count_arrays(arr:&Vec<usize>, index:usize, m:usize, value:usize, dp: &mut Vec<Vec<Option<usize>>>) -> usize{
+
+    // If value is not between 1 and m, no possible case
+    if value >m || value < 1 { return 0; }
+
+    // If already computed the value, return it
+    if dp[index][value].is_some() { return dp[index][value].unwrap(); }
+
+    // Now, if the array's given index value is already non 0
+    // And not equal to the checked value, no possible case
+    if arr[index] != 0 && arr[index] != value { dp[index][value] = Option::from(0); return 0; }
+
+    // Now, in either case, we can set the given value to the given index.
+    // Hence, count the cases after setting given index to value
+
+    // Base Case, if the first element is to be checked, return 1
+    // Because if arr[0] == 0, only 1 possible case, that is set the value
+    // Or if arr[0] == value, still only 1 case
+    if index == 0 { dp[index][value] = Option::from(1); return 1; }
+
+
+    // Now cases are counted by recursively calling the function
+    // For index -1, and values x-1, x, x+1
+    // It is guaranteed that the value returned by each function
+    // is not greater than 10^9+7. So, we add them and return their modulo 10^9+7
+
+    dp[index][value] = Option::from(  (count_arrays(arr, index-1, m, value-1, dp) +
+        count_arrays(arr, index-1, m, value, dp) +
+        count_arrays(arr, index-1, m, value+1, dp)) % 1_000_000_007);
+    return dp[index][value].unwrap();
+}
+
+// Driver code
+
+// Take array input
+use std::io;
+fn take_vector() -> Vec<usize> {
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).unwrap();
+    let arr: Vec<usize> = input.trim().split_whitespace()
+        .map(|x| x.parse().unwrap()).collect();
+    return arr;
+}
+
+fn main() {
+    // Input n and m
+    let n_m = take_vector();
+    let n = n_m[0];
+    let m = n_m[1];
+
+    // Take array
+    let arr = take_vector();
+
+    // Take sum of all the possible values.
+    // Now, we know that usize can easily store numbers upto 10^18
+    // So, we take modulo at the end.
+
+    let mut ans = 0;
+
+    // DP matrix has m+1 columns because value of each element is at max m
+    // And there are n elements in array, so n rows.
+    let mut dp = vec![vec![None; m+1]; n];
+
+    // We take all possible value of last element.
+    // If last element is non zero, other values will be rejected
+    for i in 1..m+1 {
+        ans+=count_arrays(&arr, n-1, m, i, &mut dp);
+    }
+
+    println!("{}", ans% 1_000_000_007);
+}
+```
+
+**Input**
+>3 100 <br/>
+2 1 0
+
+**Output**
+
+> 2
+
+**Time Complexity : O( m×n )** <br/>
+**Space Complexity : O( m×n )**
+
+## Tabulation  ( Bottom-up DP )  Method
+
+Although time and space complexities of tabulation as well as memoization method are same, tabulation is much more efficient as there are a lot of expensive recursive calls in memoization.
+
+In tabulation method, we make the DP matrix, and fill it first on the basis of base condition, and then on the basis of previous row.
+
+### Algorithm
+
+1. Initially, if the value of first element is 0, set first row to 1, because only 1 possible case. Else, set first row to 0, except the value of first element.
+2. For each element, if the value is non-zero, say x, then compute only cases for x, and set other to zero. Else, compute cases for all values from 1 to m.
+3. To compute values for given element, simply take sum of `x-1`, `x` and `x+1` from previous row.
+4. Finally, return the sum of elements of last row as the answer.
+
+### Function
+
+Here is the function using above algorithm
+
+```rust
+fn count_arrays(arr:&Vec<usize>, m:usize) -> usize{
+
+    // init dp matrix as all 0
+    // We take m+2 columns so that 0 and m+1 are always 0.
+    let mut dp = vec![vec![0; m+2]; arr.len()];
+
+    // If first element is 0, set first row to 1, else set only value to 1
+    // Rest of elements are automatically set to 0
+    if arr[0] == 0 { for i in 1..m+1 { dp[0][i] = 1;} }
+    else { dp[0][arr[0]] = 1; }
+
+    // For each subsequent row, if the element is 0, compute cases for each value
+    // from 1 to m. Else for the given element only.
+    for i in 1..arr.len() {
+        if arr[i] == 0 {
+            // The 0 and m+1 element in dp array is always 0, hence no issue.
+            for j in 1..m+1 { dp[i][j] = (dp[i-1][j-1] + dp[i-1][j] + dp[i-1][j+1])%1_000_000_007;}
+        }
+        else {
+            let val = arr[i];
+            dp[i][val] = (dp[i-1][val-1] + dp[i-1][val] + dp[i-1][val+1])%1_000_000_007;}
+    }
+
+    // Finally, return the sum of all elements
+
+    let mut sum = 0;
+    for i in 1..m+1 { sum+=dp[arr.len()-1][i]; }
+    return sum%1_000_000_007;
+}
+```
+
+With Driver code
+
+```rust
+
+
+fn count_arrays(arr:&Vec<usize>, m:usize) -> usize{
+
+    // init dp matrix as all 0
+    // We take m+2 columns so that 0 and m+1 are always 0.
+    let mut dp = vec![vec![0; m+2]; arr.len()];
+
+    // If first element is 0, set first row to 1, else set only value to 1
+    // Rest of elements are automatically set to 0
+    if arr[0] == 0 { for i in 1..m+1 { dp[0][i] = 1;} }
+    else { dp[0][arr[0]] = 1; }
+
+    // For each subsequent row, if the element is 0, compute cases for each value
+    // from 1 to m. Else for the given element only.
+    for i in 1..arr.len() {
+        if arr[i] == 0 {
+            // The 0 and m+1 element in dp array is always 0, hence no issue.
+            for j in 1..m+1 { dp[i][j] = (dp[i-1][j-1] + dp[i-1][j] + dp[i-1][j+1])%1_000_000_007;}
+        }
+        else {
+            let val = arr[i];
+            dp[i][val] = (dp[i-1][val-1] + dp[i-1][val] + dp[i-1][val+1])%1_000_000_007;}
+    }
+
+    // Finally, return the sum of all elements
+
+    let mut sum = 0;
+    for i in 1..m+1 { sum+=dp[arr.len()-1][i]; }
+    return sum%1_000_000_007;
+}
+
+// Driver code
+
+// Take array input
+use std::io;
+fn take_vector() -> Vec<usize> {
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).unwrap();
+    let arr: Vec<usize> = input.trim().split_whitespace()
+        .map(|x| x.parse().unwrap()).collect();
+    return arr;
+}
+
+fn main() {
+    // Input n and m
+    let n_m = take_vector();
+    let m = n_m[1];
+
+    // Take array
+    let arr = take_vector();
+
+    println!("{}", count_arrays(&arr, m));
+}
+```
+
+**Input**
+>3 100 <br/>
+2 1 0
+
+**Output**
+
+> 2
+
+**Time Complexity : O( m×n )** <br/>
+**Space Complexity : O( m×n )**
+
+
+## Space Optimized Tabulation Method
+
+If we observe the above tabulation method carefully, we find that for calculating the value for each `n`, only the previous row values are needed.
+
+Hence, we can optimize our space complexity, by storing only the previous row and not the whole matrix.
+
+### Function
+
+Here is the function using space optimization of tabulation method.
+
+```rust
+
+fn count_arrays(arr:&Vec<usize>, m:usize) -> usize{
+    // Initially, both current and finally are all 0 vector
+    let mut prev = vec![0; m+2];
+    let mut curr = vec![0; m+2];
+
+    // Base case, If first element is 0, set first row to 1, else set only value to 1
+    // Rest of elements are automatically set to 0
+    if arr[0] == 0 { for i in 1..m+1 { prev[i] = 1;} }
+    else { prev[arr[0]] = 1; }
+
+    // For each subsequent row, if the element is 0, compute cases for each value
+    // from 1 to m. Else for the given element only.
+    for i in 1..arr.len() {
+        if arr[i] == 0 {
+            // The 0 and m+1 element in dp array is always 0, hence no issue.
+            for j in 1..m+1 { curr[j] = (prev[j-1] + prev[j] + prev[j+1])%1_000_000_007;}
+        }
+        else {
+            let val = arr[i];
+            curr[val] = (prev[val-1] + prev[val] + prev[val+1])%1_000_000_007;}
+
+        // Move the current values to previous vector
+        // And set current vector to 0
+        for j in 0..m+2 {prev[j] = curr[j]; curr[j] = 0;}
+    }
+
+    // Finally, return the sum of all elements of previous
+    // Because current is cleared and its element are already in prev
+    let mut sum = 0;
+    for i in 1..m+1 { sum+=prev[i]; }
+    return sum%1_000_000_007;
+}
+```
+
+Use the same driver code.
+
+**Input**
+>3 100 <br/>
+2 1 0
+
+**Output**
+
+> 2
+
+**Time Complexity : O( m×n )** <br/>
+**Space Complexity : O( m )**
+
+## Conclusion
+
+Array Description is a Dynamic Programming Problem taken from CSES problem set.
+
+In this question you are given an array with missing values. You have to determine the number of possible arrays such that absolute difference of each adjacent elements is at most 1.
+
+Also, each element must be in range 1 to m.
+
+In this article, we saw how to solve the Array Description problem, first using recursion and then using Dynamic Programming, memoization as well as tabulation method, and latter the space optimized tabulation method in Rust Language.
+
+Here is the optimized function for easy access
+
+```rust
+fn count_arrays(arr:&Vec<usize>, m:usize) -> usize{
+    let mut prev = vec![0; m+2];
+    let mut curr = vec![0; m+2];
+    if arr[0] == 0 { for i in 1..m+1 { prev[i] = 1;} }
+    else { prev[arr[0]] = 1; }
+
+    for i in 1..arr.len() {
+        if arr[i] == 0 { for j in 1..m+1 { curr[j] = (prev[j-1] + prev[j] + prev[j+1])%1_000_000_007;} }
+        else { let val = arr[i];curr[val] = (prev[val-1] + prev[val] + prev[val+1])%1_000_000_007;}
+
+        for j in 0..m+2 {prev[j] = curr[j]; curr[j] = 0;}
+    }
+    let mut sum = 0; for i in 1..m+1 { sum+=prev[i]; }
+    return sum%1_000_000_007;
+}
+```
+
+**Thank You**
+
+import {SEO} from "smooth-doc/src/components/SEO";
+
+<SEO title="Array Description Problem with Space Optimization ( DP ) - Dynamic Programming - Rust Programming"
+     description="Determine the number of possible arrays, absolute difference of adjacent elements is at most 1. We will see recursive, memoization, tabulation and space optimized DP solution in Rust Language."/>

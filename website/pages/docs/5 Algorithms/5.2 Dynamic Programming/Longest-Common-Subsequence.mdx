@@ -1,7 +1,7 @@
 ---
 title: Longest Common Subsequence
 section: 5.2 Dynamic Programming
-order: 1
+order: 10
 slug: /dynamic-programming/longest-common-subsequence/
 description: In this article, we will see how to find length of Longest Common Subsequence of given strings, first using recursion, and then using dynamic programming methods, Memoization as well as Tabulation, in Rust Language.
 ---
@@ -124,7 +124,7 @@ acfbde
 
 ## Overlapping Sub-problems
 
-If we have a look carefully on recursive approach, we computed multiple LCS of multiple strings again and again.
+If we have a look carefully on recursive approach, we computed the LCS of multiple subsequence or substrings of original strings again and again. This is called overlapping sub-problems.
 
 For example, if we have to compute LCS of strings `abcdefghi` and `jklmnopqr`, the LCS of strings `abcd` and `jklm` is computed more than 1000 times, and takes hundreds of iterations each time.
 
@@ -135,7 +135,7 @@ In the LCS problem, we take 2D matrix, such that matrix[i][j] contains the lengt
 For example, if the string1 is `abcdef` and string 2 is `acfbde`, then matrix[3][4] will contain length of LCS of strings `abc` and `acfb`
 
 
-## Memoization ( Dynamic Programming ) Method
+## Memoization ( Top-down DP ) Method
 
 In memoization method, we simply take a DP matrix, and store the computed result.
 
@@ -255,7 +255,7 @@ acfbde
 **Time Complexity : O( m*n )** <br/>
 **Space Complexity : O( m*n )**
 
-## Tabulation  ( Dynamic Programming )  Method
+## Tabulation  ( Bottom-up DP )  Method
 
 Although time and space complexities of tabulation as well as memoization method are same, tabulation is much more efficient as there are a lot of expensive recursive calls in memoization.
 
@@ -318,13 +318,13 @@ acfbde
 
 Though time and space complexities are same as memoization method, yet it is much more optimized than memoization method.
 
-## Conclude
+## Conclusion
 
 Longest Common Subsequence is a classical Dynamic Programming problem, in which we have to find the length of longest common subsequence of the given strings.
 
 In this article, we saw how to find Longest Common Subsequence ( LCS ) of two strings, first using Recursion and then using Dynamic Programming methods, Memoization as well as Tabulation method in Rust Language.
 
-Here is optimized tabulation method function for easy access.
+Here is the optimized function for easy access
 
 ```rust
 fn longest_common_subsequence(string1:&Vec<char>, string2:&Vec<char>, n:usize, m:usize, dp:&mut Vec<Vec<i64>>) -> i64 {
@@ -344,5 +344,5 @@ fn longest_common_subsequence(string1:&Vec<char>, string2:&Vec<char>, n:usize, m
 
 import {SEO} from "smooth-doc/src/components/SEO";
 
-<SEO title="Longest Common Subsequence ( LCS ) using Memoization and Tabulation - Rust Programming"
+<SEO title="Longest Common Subsequence ( LCS ) using Memoization and Tabulation - Dynamic Programming - Rust Programming"
      description="In this article, we will see how to find length of Longest Common Subsequence of given strings, first using recursion, and then using dynamic programming methods, Memoization as well as Tabulation, in Rust Language" />

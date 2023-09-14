@@ -15,7 +15,6 @@
 ## Number Theory
 
 * Redesign intro to Number Theory page
-* nth root page
 
 ## Combinatorics
 
@@ -30,6 +29,8 @@
 ## Data Structures in Rust
 
 * Using in built data structures in Rust.
-
 * DSA Sheet
 
+## Dynamic Programming
+
+* Add LIS

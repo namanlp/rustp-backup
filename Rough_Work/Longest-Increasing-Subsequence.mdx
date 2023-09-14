@@ -1,0 +1,252 @@
+---
+title: Longest Increasing Subsequence
+section: 5.2 Dynamic Programming
+order: 11
+slug: /dynamic-programming/longest-increasing-subsequence/
+description: Longest Increasing Subsequence
+---
+
+# Longest Increasing Subsequence
+and Dynamic Programming Solution to it using memoization and tabulation in Rust Language.
+
+## Introduction
+
+Longest Increasing Subsequence is another classical Dynamic Programming problem, in which we have to find the length of longest increasing subsequence in a given array.
+
+Subsequence of an array is defined as an array, that is formed by removing 0 or more elements from the original array.
+
+**For Example :** If array are [1, 5, 8, 2, 4, 5, 10], the longest increasing subsequence is [1, 2, 4, 5, 10].
+
+## Recursive Solution
+
+Recursive solution to this problem is pretty straightforward. At each step, you have 2 choices :
+
+1. **Include the element :** Include the given element, only if the previous element is lesser.
+2. **Exclude the element :** We can exclude it and include other elements.
+
+And recursively call for next elements.
+We have to take maximum of both the cases.
+
+### Function
+
+Here is the function using above algorithm
+
+```rust
+use std::cmp::max;
+
+fn lis_recursive(arr : &Vec<usize>, n:usize, i:usize, prev_index:Option<usize>) -> usize{
+    // If completely traversed array, return 0
+    if i >= n { return 0; }
+
+    // If prev index is none, we can both include and exclude
+    // Else, we can include iff previous element is lesser
+    // So, we have to exclude otherwise
+
+    if prev_index.is_some() && arr[i] <= arr[prev_index.unwrap()] {
+        return lis_recursive( arr, n, i+1, prev_index);
+    }
+
+    // Else, we can both include and exclude,
+    // So return max of both cases
+    return max(
+        1+lis_recursive(arr, n, i+1, Option::from(i)), // Include
+        lis_recursive(arr, n, i+1, prev_index)); // Exclude
+}
+```
+
+With Driver code
+
+```rust
+use std::cmp::max;
+
+fn lis_recursive(arr : &Vec<usize>, n:usize, i:usize, prev_index:Option<usize>) -> usize{
+    // If completely traversed array, return 0
+    if i >= n { return 0; }
+
+    // If prev index is none, we can both include and exclude
+    // Else, we can include iff previous element is lesser
+    // So, we have to exclude otherwise
+
+    if prev_index.is_some() && arr[i] <= arr[prev_index.unwrap()] {
+        return lis_recursive( arr, n, i+1, prev_index);
+    }
+
+    // Else, we can both include and exclude,
+    // So return max of both cases
+    return max(
+        1+lis_recursive(arr, n, i+1, Option::from(i)), // Include
+        lis_recursive(arr, n, i+1, prev_index)); // Exclude
+}
+
+// Driver Code
+
+use std::io;
+fn take_vector() -> Vec<usize> {
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).unwrap();
+    let arr: Vec<usize> = input.trim().split_whitespace()
+        .map(|x| x.parse().unwrap()).collect();
+    return arr;
+}
+
+fn main() {
+    let arr = take_vector();
+    println!("{}", lis_recursive(&arr, arr.len(), 0, None));
+}
+```
+
+**Input**
+> 1 5 8 2 4 5 10
+
+**Output**
+
+> 5
+
+**Time Complexity : O( 2<sup>n</sup> )** <br/>
+**Space Complexity : O( n )**
+
+( Space complexity includes recursive stack space )
+
+## Overlapping Sub-problems
+
+If we have a look carefully on recursive approach, we computed multiple results many times.
+
+**For Example :** If the array is [1, 2, ... ,50] ( numbers from 1 to 50 ), we can reach the element 25 in thousands of ways, by including and excluding 1, 2, 3, etc.
+and takes thousands of recursions each time to calculate, by including and excluding 26, 27, 28, etc.
+
+These are called **Overlapping Sub-problems** because they are smaller part of large problems, and are computed again and again.
+
+So, we simply calculate them once, and store them in a matrix, and retrieve them when necessary. This helps to save a lot of computation.
+
+This is called Memoization Dynamic Programming Approach for the problem.
+
+
+## Memoization ( Top-down DP ) Method
+
+In memoization method, we simply take a DP matrix, and store the computed result.
+
+### Algorithm
+
+1. Initially, take a DP matrix and set all its elements to `None` type. Alternatively, you can set it to -1.
+2. If the Longest Increasing Subsequence for the given index and previous element is already computed, return it.
+3. Else, calculate the value using recursion, and store it in DP matrix, and return it.
+
+
+### Function
+
+Here is the function using above algorithm
+
+```rust
+use std::cmp::max;
+
+fn lis_recursive(arr : &Vec<usize>, n:usize, i:usize, prev_index:Option<usize>, dp:&mut Vec<Vec<Option<usize>>>) -> usize{
+    // If completely traversed array, return 0
+    if i >= n { return 0; }
+
+    // If prev index is none, we can both include and exclude
+    // We compute both. Also, note that we can reach it in just 1 way
+    // That is, by excluding all previous elements. Hence, there is no point in storing it.
+
+    if prev_index.is_none() {
+        return max(
+            1+lis_recursive(arr, n, i+1, Option::from(i), dp), // Include
+            lis_recursive(arr, n, i+1, None, dp)); // Exclude
+    }
+
+    // If the already value is stored, return it
+    if dp[i][prev_index.unwrap()].is_some() { return dp[i][prev_index.unwrap()].unwrap();}
+
+    // We can include iff previous element is lesser
+    // So, we have to exclude otherwise
+
+    if arr[i] <= arr[prev_index.unwrap()] {
+        dp[i][prev_index.unwrap()] = Option::from( lis_recursive( arr, n, i+1, prev_index, dp));
+        return dp[i][prev_index.unwrap()].unwrap();
+    }
+
+    // Else, we can both include and exclude,
+    // So return max of both cases
+    dp[i][prev_index.unwrap()] = Option::from( max(
+        1+lis_recursive(arr, n, i+1, Option::from(i), dp), // Include
+        lis_recursive(arr, n, i+1, prev_index, dp))); // Exclude
+    return dp[i][prev_index.unwrap()].unwrap();
+}
+```
+
+With Driver code
+
+```rust
+use std::cmp::max;
+
+fn lis_recursive(arr : &Vec<usize>, n:usize, i:usize, prev_index:Option<usize>, dp:&mut Vec<Vec<Option<usize>>>) -> usize{
+    // If completely traversed array, return 0
+    if i >= n { return 0; }
+
+    // If prev index is none, we can both include and exclude
+    // We compute both. Also, note that we can reach it in just 1 way
+    // That is, by excluding all previous elements. Hence, there is no point in storing it.
+
+    if prev_index.is_none() {
+        return max(
+            1+lis_recursive(arr, n, i+1, Option::from(i), dp), // Include
+            lis_recursive(arr, n, i+1, None, dp)); // Exclude
+    }
+
+    // If the already value is stored, return it
+    if dp[i][prev_index.unwrap()].is_some() { return dp[i][prev_index.unwrap()].unwrap();}
+
+    // We can include iff previous element is lesser
+    // So, we have to exclude otherwise
+
+    if arr[i] <= arr[prev_index.unwrap()] {
+        dp[i][prev_index.unwrap()] = Option::from( lis_recursive( arr, n, i+1, prev_index, dp));
+        return dp[i][prev_index.unwrap()].unwrap();
+    }
+
+    // Else, we can both include and exclude,
+    // So return max of both cases
+    dp[i][prev_index.unwrap()] = Option::from( max(
+        1+lis_recursive(arr, n, i+1, Option::from(i), dp), // Include
+        lis_recursive(arr, n, i+1, prev_index, dp))); // Exclude
+    return dp[i][prev_index.unwrap()].unwrap();
+}
+
+// Driver Code
+
+use std::io;
+fn take_vector() -> Vec<usize> {
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).unwrap();
+    let arr: Vec<usize> = input.trim().split_whitespace()
+        .map(|x| x.parse().unwrap()).collect();
+    return arr;
+}
+
+fn main() {
+    let arr = take_vector();
+
+    // Create DP matrix
+    let mut dp = vec![vec![None; arr.len()]; arr.len()];
+
+    println!("{}", lis_recursive(&arr, arr.len(), 0, None, &mut dp));
+}
+```
+
+**Input**
+> 1 5 8 2 4 5 10
+
+**Output**
+
+> 5
+
+**Time Complexity : O( n<sup>2</sup> )** <br/>
+**Space Complexity : O( n<sup>2</sup> )**
+
+## Tabulation  ( Bottom-up DP )  Method
+
+Although time and space complexities of tabulation as well as memoization method are same, tabulation is much more efficient as there are a lot of expensive recursive calls in memoization.
+
+In tabulation method, we make the DP matrix, and fill it first on the basis of base condition, and then on the basis of previous row.
+
+### Algorithm
+
